@@ -10,7 +10,8 @@ import (
 type Repository interface {
 	Create(context.Context, *entities.Department) (entities.Department, error)
 	GetLastDeptId(context.Context) (string, error)
-	GetByName(context.Context, string) (string, error)
+	GetByName(context.Context, string) (entities.Department, error)
+	GetById(context.Context, string) (entities.Department, error)
 }
 
 type postgreRepository struct {
@@ -50,13 +51,29 @@ func (p *postgreRepository) GetLastDeptId(ctx context.Context) (res string, err 
 	return
 }
 
-func (p *postgreRepository) GetByName(ctx context.Context, name string) (res string, err error) {
+func (p *postgreRepository) GetByName(ctx context.Context, name string) (res entities.Department, err error) {
 	dept := entities.Department{}
 	queryStr := `
 		SELECT dept_no, dept_name FROM departments
 		WHERE dept_name = $1
 	`
 	err = p.db.GetContext(ctx, &dept, queryStr, name)
-	res = dept.DepartmentNo
+
+	res = dept
+	return
+}
+
+func (p *postgreRepository) GetById(ctx context.Context, no string) (res entities.Department, err error) {
+	dept := entities.Department{}
+	queryStr := `
+		SELECT dept_no, dept_name FROM departments
+		WHERE dept_no = $1
+	`
+	err = p.db.GetContext(ctx, &dept, queryStr, no)
+	if err != nil {
+		return
+	}
+
+	res = dept
 	return
 }

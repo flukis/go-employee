@@ -12,6 +12,7 @@ import (
 
 type Service interface {
 	InsertDept(context.Context, *CreateDeptParams) (entities.Department, error)
+	GetDeptById(context.Context, string) (entities.Department, error)
 }
 
 type service struct {
@@ -59,4 +60,13 @@ func (s *service) InsertDept(ctx context.Context, arg *CreateDeptParams) (res en
 		DepartmentName: arg.Name,
 		DepartmentNo:   generatedId,
 	})
+}
+
+type GetDeptParams struct {
+	ID string `json:"id"`
+}
+
+func (s *service) GetDeptById(ctx context.Context, id string) (res entities.Department, err error) {
+	res, err = s.repository.GetById(ctx, id)
+	return
 }

@@ -32,3 +32,22 @@ func AddDepartment(service department.Service) fiber.Handler {
 		return c.JSON(presenter.DeptSuccessResponse(&res))
 	}
 }
+
+func GetDepartment(service department.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id := c.Params("id")
+
+		if id == "" {
+			c.Status(http.StatusBadRequest)
+			return c.JSON(presenter.DeptErrorResponse(errors.New("please specify department name")))
+		}
+
+		res, err := service.GetDeptById(c.Context(), id)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return c.JSON(presenter.DeptErrorResponse(err))
+		}
+
+		return c.JSON(presenter.DeptSuccessResponse(&res))
+	}
+}

@@ -9,4 +9,5 @@ import (
 
 func DeptRouter(app fiber.Router, service department.Service) {
 	app.Post("/department", handler.AddDepartment(service))
+	app.Get("/department/:id", handler.GetDepartment(service))
 }
